@@ -1,8 +1,8 @@
-# Welcome to the Luplo Manager Bot!
+# Welcome to the PoroBot!
 
-Note: This is a fork off the YulxVol Manager v2 repo.
+Note: This is a framework fork off the Nekonii Abstract v2 repo.
 
-This bot is designed to handle both Moderation and other fun interactions for the Luplo Community. The framework and other attachments to the bot is coded in Typescript to allow better IntelliSense and Documentation when opened to other developers to further maintain the bot.
+This bot is designed to handle weekly notifications, to-do list and statistics reporting. The framework and other attachments to the bot is coded in Typescript to allow better IntelliSense and Documentation when opened to other developers to further maintain the bot.
 
 
 # Documentation
@@ -34,15 +34,6 @@ Please make sure to add the .env file to the root folder (where /src lies, not i
 
 If you are adding new TS files that handles directly to the bot's core functionality and you want the files to be available in the documentation compiler, export it by adding the export statement in [/src/docs.ts].
 You can view the compile documentation by opening the .html file in [/docs/index.html].
-
-## Enumeration states to consider.
-When working with the Remote Database and obtaining verification details, the following is defined as:
- - **verify_id** - The Discord Snowflake ID. 0 usually means the field is by default/empty (not verified).
- - **verify_code** - The signature code. Combines both state and verification code.\
-    IF the code is 0, this means that the person has not started the verification stage.\
-    IF the code is 1, this means that the person has been verified. (Validate with verify_id).\
-    IF the code starts with a stringed prefix: (C_), this means that the person has started the verification stage, but hasn't been finalised. (Pending Discord Response).\
-    If the case scenario that the person lost the original verify_code issued by the game, then they are free to generate another code and rebind it to the bot at a later time.\
 
 ## Pathing with Interactions.
 *This usually applies for Select Menus and Buttons.\
