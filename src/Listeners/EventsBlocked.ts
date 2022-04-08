@@ -11,7 +11,7 @@ export default class EventsBlockListener extends Listener {
     }
 
     override async exec(interaction: CommandInteraction, source: Array<Record<string, unknown>>): Promise<void> {
-        const ListenLogger = new Logger("Events - YulxVol", true)
+        const ListenLogger = new Logger("Events - Client", true)
         ListenLogger.log(LoggerType.DEBUG, `Event received <- [Events Blocked] [Origin: /${source}].`)
 
         const Embed = new MessageEmbed().setColor('RED').setDescription(`${this.client.getEmoji('fail')} Insufficient permission to run interaction.`)
