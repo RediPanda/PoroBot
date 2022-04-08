@@ -1,7 +1,9 @@
 import { Listener } from "discord-akairo";
-import type { ButtonInteraction, CommandInteraction, ContextMenuInteraction, Interaction, SelectMenuInteraction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, ContextMenuInteraction, Interaction, MessageEmbed, SelectMenuInteraction } from "discord.js";
 import { Logger, LoggerType } from "../Framework/IO/Logger";
 import path from "path";
+
+const ErrorEmbed = new MessageEmbed().setColor("RED").setDescription("There was an issue running this interaction!").setFooter("Please contact Redi Panda_#0247 for assistance.")
 
 export default class InteractionListener extends Listener {
     constructor() {
@@ -22,13 +24,13 @@ export default class InteractionListener extends Listener {
         if (interaction.isCommand()) {
             // Execute the command.
             try {
-                const slashExec = await import(path.join(process.cwd(), `${botPath}`, 'Commands', `${toTitleCase(interaction.commandName).replace(/ /ig, "_")}`))
+                const slashExec = await import(path.join(process.cwd(), `${botPath}`, 'Interactions', 'Slash', `${toTitleCase(interaction.commandName).replace(/ /ig, "_")}`))
                 const cmd = await new slashExec.default()
-                if (await cmd.interactionPerm(interaction.member) === true) await cmd.interaction(interaction);
+                if (await cmd.interactionPerm(interaction.member) === true) await cmd.execute(interaction);
                 else this.client.events.emit('INT_BLOCKED', interaction, toTitleCase(interaction.commandName));
             } catch(err: unknown) {
                 ListenLogger.log(LoggerType.ERROR, `${err}`);
-                interaction.reply({content: "This command is not available!", ephemeral: true})
+                interaction.reply({embeds: [ErrorEmbed], ephemeral: true})
             }
         }
 
@@ -42,7 +44,7 @@ export default class InteractionListener extends Listener {
                 else this.client.events.emit('INT_BLOCKED', interaction, toTitleCase(interaction.commandName));
             } catch(err: unknown) {
                 ListenLogger.log(LoggerType.ERROR, `${err}`);
-                interaction.reply({content: "This command is not available!", ephemeral: true})
+                interaction.reply({embeds: [ErrorEmbed], ephemeral: true})
             }
         }
 
@@ -82,7 +84,7 @@ export default class InteractionListener extends Listener {
                 else this.client.events.emit('INT_BLOCKED', interaction, toTitleCase(actions[1]));
             } catch(err: unknown) {
                 ListenLogger.log(LoggerType.ERROR, `${err}`);
-                interaction.reply({content: "This command is not available!", ephemeral: true})
+                interaction.reply({embeds: [ErrorEmbed], ephemeral: true})
             }
         }
 
@@ -120,7 +122,7 @@ export default class InteractionListener extends Listener {
                 else this.client.events.emit('INT_BLOCKED', interaction, toTitleCase(actions[1]));
             } catch(err: unknown) {
                 ListenLogger.log(LoggerType.ERROR, `${err}`);
-                interaction.reply({content: "This command is not available!", ephemeral: true})
+                interaction.reply({embeds: [ErrorEmbed], ephemeral: true})
             }
         }
     }
