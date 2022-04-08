@@ -1,5 +1,10 @@
 import Enmap from 'enmap';
 
+export interface StorageParam {
+    server: string,
+    user: string
+}
+
 /**
  * The Storage class is responsible for handling persistent data, both on local and remote data buffers.
  * @exports
@@ -10,7 +15,7 @@ export class Storage {
     server: string | unknown;
     user: string | unknown;
 
-    constructor({server, user}: Record<string, unknown> = {server: 0, user: 0}) {
+    constructor({server, user}: StorageParam = {server: '0', user: '0'}) {
         (server ? this.server = server : this.server = "0");
         (user ? this.user = user : this.user = "0");
 
@@ -96,5 +101,6 @@ export class Storage {
 export enum StorageType {
     Client = "Client",
     Server = "Server",
-    User = "User"
+    User = "User",
+    Task = "Task"
 }
