@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { Command } from "discord-akairo";
 import type { CommandInteraction, Message } from "discord.js";
 
-
 export default class PingCommand extends Command {
     slashType: string;
 
@@ -15,7 +14,7 @@ export default class PingCommand extends Command {
     }
 
     override async exec(message: Message): Promise<void> {
-        message.reply("Pinging Server Data...");
+        message.reply({content: `Pong with a latency of ${this.client.ws.ping}ms!`});
     }
 
     async interactionPerm(): Promise<boolean> {
@@ -23,7 +22,7 @@ export default class PingCommand extends Command {
     }
 
     async interaction(interaction: CommandInteraction): Promise<void> {
-        interaction.reply({content: `Pong with a latency of ${interaction.client.ws.ping}ms!`, ephemeral: true});
+        interaction.reply("ping.")
     }
  
     getSlashData(): SlashCommandBuilder {
