@@ -19,6 +19,7 @@ import { Logger, LoggerType } from './Framework/IO/Logger';
 import type { Emoji, EmojiResolvable, User, UserResolvable } from 'discord.js';
 import { EventEmitter } from 'stream';
 import { createPool, Pool } from 'mysql2/promise';
+import discordmodals from 'discord-modals'
 
 // TS Declarations
 declare module 'discord-akairo' {
@@ -151,8 +152,8 @@ client
     frameworkLogger.log(LoggerType.INFO, `Session successfully connected! Running under as: [PID: ${process.pid}] ${client?.user?.tag}`)
 
     // Read and bind interactions.
-    frameworkLogger.log(LoggerType.DATA, "Successfully binded the Auction Core to the Client!")
     new ApplicationHandler(client).readInteractions();
+    discordmodals(client); // Binds the modal handler.
   })
   .catch((err) => {
     frameworkLogger.log(LoggerType.ERROR, "There was an issue establishing a connection to the Discord API Gateway!")
