@@ -4,6 +4,7 @@ import InteractionEvent from "./Base";
 import { Modal, TextInputComponent, showModal, ModalSubmitInteraction } from 'discord-modals'
 import { UserProfile } from "../../Framework/Factory/UserProfile";
 import { ActiveState, TaskManager } from "../../Framework/Factory/Task";
+import type { AkairoClient } from "discord-akairo";
 
 export interface InteractionRegister {
     description?: string,
@@ -156,7 +157,6 @@ export default class NewTask extends InteractionEvent {
     }
 
     handleModal(modal: ModalSubmitInteraction): void {
-
         // Instantiate the UP factory.
         let UP = new UserProfile(modal.client, modal.user.id);
         let TM = new TaskManager(modal.client);
@@ -177,7 +177,7 @@ export default class NewTask extends InteractionEvent {
 
                 let embed = new MessageEmbed()
                     .setColor("GREEN")
-                    .setDescription("Thank you for submitting **Form 1**!\n\nBy clicking on the button below, you will be filling out **Form 2**.\nThis is an optional form that enables you to hotlink the rubric and submission links to your task.")
+                    .setDescription(`Thank you for submitting **Form 1**!\n\nBy clicking on the button below, you will be filling out **Form 2**.\nThis is an optional form that enables you to hotlink the rubric and submission links to your task.`)
                     .setFooter(`Your new task is ${taskid}.`);
 
                 let comp = new MessageActionRow().addComponents(
@@ -187,9 +187,8 @@ export default class NewTask extends InteractionEvent {
                     .setLabel("Click to fill Form 2.")
                     .setEmoji("🔗")
                 )
-                
+
                 modal.reply({embeds: [embed], components: [comp]})
-                
                 break;
             }
             case "NewTaskP2": {
@@ -200,7 +199,7 @@ export default class NewTask extends InteractionEvent {
                 let embed = new MessageEmbed()
                     .setColor("GREEN")
                     .setDescription(`Task **${modal.customId.split('.')[5]}** has been successfully created!`)
-                
+
                 modal.reply({ephemeral: true, embeds: [embed]})
                 break;
             }

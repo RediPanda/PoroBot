@@ -109,7 +109,7 @@ export class GuildManager {
                 break;
         }
 
-        const chanid = (new Storage({}).select(StorageType.Server).get(this.serverid)?.mod as ModData)?.chanid;
+        const chanid = (new Storage().select(StorageType.Server).get(this.serverid)?.mod as ModData)?.chanid;
         // return console.log(chanid)
         
         return (options!.message!.guild!.channels!.cache!.get(chanid) as TextChannel)!.send({embeds: [logframe]});

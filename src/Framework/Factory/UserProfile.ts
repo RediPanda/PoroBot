@@ -109,13 +109,13 @@ export class UserProfile {
     GetStatData(): StatModel {
         return {
             time_measurement: {
-                break_last: this.data.statistics.time_measurement.break_last || "0",
-                break_status: this.data.statistics.time_measurement.break_status || 0,
-                study_last: this.data.statistics.time_measurement.study_last || "0",
-                study_status: this.data.statistics.time_measurement.study_status || 0
+                break_last: this.data.statistics?.time_measurement?.break_last || "0",
+                break_status: this.data.statistics?.time_measurement?.break_status || 0,
+                study_last: this.data.statistics?.time_measurement?.study_last || "0",
+                study_status: this.data.statistics?.time_measurement?.study_status || 0
             },
-            cumulative_break: this.data.statistics.cumulative_break || 0,
-            cumulative_study: this.data.statistics.cumulative_study || 0
+            cumulative_break: this.data.statistics?.cumulative_break || 0,
+            cumulative_study: this.data.statistics?.cumulative_study || 0
         }
     }
 

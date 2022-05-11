@@ -20,6 +20,7 @@ import type { Emoji, EmojiResolvable, User, UserResolvable } from 'discord.js';
 import { EventEmitter } from 'stream';
 import { createPool, Pool } from 'mysql2/promise';
 import discordmodals from 'discord-modals'
+import {Utility} from './Framework/Factory/Utility'
 
 // TS Declarations
 declare module 'discord-akairo' {
@@ -33,6 +34,7 @@ declare module 'discord-akairo' {
     slashCommands: Record<string, unknown>[]
     botDir: string
     pool: Pool
+    utils: Utility;
     // utils: Record<string, unknown>;
   }
 }
@@ -154,6 +156,9 @@ client
     // Read and bind interactions.
     new ApplicationHandler(client).readInteractions();
     discordmodals(client); // Binds the modal handler.
+
+    // Bind the utility system to the client.
+    client.utils = new Utility(client);
   })
   .catch((err) => {
     frameworkLogger.log(LoggerType.ERROR, "There was an issue establishing a connection to the Discord API Gateway!")

@@ -14,7 +14,7 @@ export default class EventsBlockListener extends Listener {
         const ListenLogger = new Logger("Events - Client", true)
         ListenLogger.log(LoggerType.DEBUG, `Event received <- [Events Blocked] [Origin: /${source}].`)
 
-        const Embed = new MessageEmbed().setColor('RED').setDescription(`${this.client.getEmoji('fail')} Insufficient permission to run interaction.`)
+        const Embed = new MessageEmbed().setColor('RED').setDescription(`${this.client.getEmoji('warning')} Insufficient permission to run interaction.`)
         
         interaction.reply({embeds: [Embed], ephemeral: true});   
     }
