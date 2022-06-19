@@ -12,7 +12,7 @@
     "prod:test": "cross-env NODE_ENV=production ts-node dist/index.js",
     "build": "npx tsc",
     "flush": "cross-env NODE_ENV=development STATE=FLUSH npx ts-node src/index.ts",
-    "dev": "cross-env NODE_ENV=development nodemon --watch src -e ts,json --ignore src/storage --delay 3 src/index.ts",
+    "dev": "cross-env NODE_ENV=development nodemon --watch src -e ts,json --ignore src/storage --delay 8 src/index.ts",
     "lint": "eslint --cache src",
     "docs": "npx typedoc --tsconfig tsconfig.json",
     "slash": "ts-node ./src/Framework/WS/DeploySlashCommands.ts"
