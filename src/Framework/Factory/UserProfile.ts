@@ -67,8 +67,10 @@ export class UserProfile {
 
                 // We are coming back from the MEASURE state, so we can stop the update and calculate the cumulative.
                 this.storage.set("profile", dayjs().unix(), "statistics.time_measurement." + `${type}_last`);
+
+                // If statement ensures that the last status was indeed measuring and not AVAILABLE/RESET again.
+                if ((this.storage.get("profile") as UserProfileModel).statistics.time_measurement[`${type}_status`] == Status.MEASURING) this.storage.set("profile", time, "statistics." + `cumulative_${type}`);
                 this.storage.set("profile", Status.AVAILABLE, "statistics.time_measurement." + `${type}_status`);
-                this.storage.set("profile", time, "statistics." + `cumulative_${type}`);
                 break;
             }
             case Status.MEASURING: {
@@ -144,14 +146,27 @@ export class UserProfile {
         return this.storage.get("profile").week.current || 1;
     }
 
+    /**
+     * Sets the current internal week counter.
+     * @param week 
+     * @returns void
+     */
     SetWeek(week: number): void {
         this.storage.set("profile", week, "week.current")
     }
 
+    /**
+     * Get the maximum internal week counter.
+     * @returns Maximum Week value
+     */
     GetMaxWeek(): number {
         return this.storage.get("profile").week.end || 1
     }
 
+    /**
+     * Sets the maximum internal week counter.
+     * @returns void
+     */
     SetWeekMax(max: number): void {
         this.storage.set("profile", max, "week.end")
     }
