@@ -172,7 +172,7 @@ export class UserProfile {
     }
 
     GetColor(): string {
-        return this.storage.get("profile").notify_color || "#5865F2";
+        return this.storage.get("profile")?.notify_color || "#5865F2";
     }
 
     SetColor(hex: string): void {
