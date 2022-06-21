@@ -72,7 +72,7 @@ export class Core extends AkairoClient {
         'DIRECT_MESSAGE_REACTIONS',
         'DIRECT_MESSAGE_TYPING'
       ],
-      ownerID: ["222954293374746626", "222804393030844438"],
+      ownerID: ["222954293374746626"],
       partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
     });
 
