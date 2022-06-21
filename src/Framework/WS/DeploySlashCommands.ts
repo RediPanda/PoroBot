@@ -8,15 +8,14 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { readdirSync } from 'fs';
 import path from 'path';
-import type { SlashCommandBuilder } from '@discordjs/builders';
 
 const appId = '919172638327312456'; // Application ID of the bot.
 const guilds = ['917479312825933884', '687580684797345792'];
 
 // Declaring an empty array for SlashBuilder bodies.
 const logger = new Logger('Slash Deploy', true, 'Slash Deploy');
-const globalSlash: SlashCommandBuilder[] = [];
-const guildSlash: SlashCommandBuilder[] = [];
+const globalSlash: any[] = [];
+const guildSlash: any[] = [];
 
 // Retrieves all TS files.
 const commandList = readdirSync(path.join(process.cwd(), 'src', 'Commands')).filter(f => f.endsWith('.ts'));
