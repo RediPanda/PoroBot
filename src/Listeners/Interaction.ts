@@ -48,6 +48,19 @@ export default class InteractionListener extends Listener {
             }
         }
 
+        // Check for auto-complete features.
+        if (interaction.isAutocomplete()) {
+            let filepath = path.join(process.cwd(), `${botPath}`, 'Interactions', 'Slash', `${(toTitleCase(interaction.commandName)).replace(/ /ig, "_")}`);
+
+            try {
+                const instance = await import(filepath);
+                const cmd = await new instance.default()
+                await cmd.handleAuto(interaction)
+            } catch(err: unknown) {
+                ListenLogger.log(LoggerType.ERROR, `${err}`);
+            }
+        }
+
         // Check if the interaction is a select menu.
         if (interaction.isSelectMenu()) {
             // Always Disable.
