@@ -49,7 +49,8 @@ export default class StartCMD extends InteractionEvent {
                 choices: [
                     {name: "Study", value: "study"},
                     {name: "Break", value: "break"}
-                ]
+                ],
+                required: true
             }]
         }
     }

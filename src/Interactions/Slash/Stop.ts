@@ -49,7 +49,8 @@ export default class StopCMD extends InteractionEvent {
                 choices: [
                     {name: "Study", value: "study"},
                     {name: "Break", value: "break"}
-                ]
+                ],
+                required: true
             }]
         }
     }
