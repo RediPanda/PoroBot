@@ -23,8 +23,17 @@ export class TaskManager {
         return this.storage.has(id);
     }
 
+    ExistByName(name: string): boolean {
+        if (this.storage.array().find(obj => obj?.name.trim() === name?.trim()) === undefined) return false;
+        else return true;
+    }
+
     GetById(id: string): Task {
         return new Task(this.storage.get(id));
+    }
+
+    GetByName(name: string): Task {
+        return new Task(this.storage.array().find(obj => obj?.name.trim() === name?.trim()));
     }
 
     DeleteById(id: string): void {
