@@ -61,22 +61,22 @@ export class UserProfile {
             case Status.AVAILABLE: {
                 // Calculate difference first.
                 // Now calculate and append the cumulative time value.
-                let time = this.storage.get("profile").statistics[`cumulative_${type}`] || 0;
-                time += (dayjs().unix() - (dayjs.unix(this.storage.get("profile").statistics.time_measurement[`${type}_last`])).unix());
-                this.logger.log(LoggerType.DEBUG, `Calculated time = ${(dayjs().unix() - (dayjs.unix(this.storage.get("profile").statistics.time_measurement[`${type}_last`])).unix())} seconds`)
+                let time = this.storage.get("profile")?.statistics[`cumulative_${type}`] || 0;
+                time += (dayjs().unix() - (dayjs.unix(this.storage.get("profile")?.statistics?.time_measurement[`${type}_last`])).unix());
+                this.logger.log(LoggerType.DEBUG, `Calculated time = ${(dayjs().unix() - (dayjs.unix(this.storage.get("profile")?.statistics?.time_measurement[`${type}_last`])).unix())} seconds`)
 
                 // We are coming back from the MEASURE state, so we can stop the update and calculate the cumulative.
                 this.storage.set("profile", dayjs().unix(), "statistics.time_measurement." + `${type}_last`);
 
                 // If statement ensures that the last status was indeed measuring and not AVAILABLE/RESET again.
-                if ((this.storage.get("profile") as UserProfileModel).statistics.time_measurement[`${type}_status`] == Status.MEASURING) this.storage.set("profile", time, "statistics." + `cumulative_${type}`);
+                if (((this.storage.get("profile") as UserProfileModel)?.statistics?.time_measurement[`${type}_status`] == Status.MEASURING) || false) this.storage.set("profile", time, "statistics." + `cumulative_${type}`);
                 this.storage.set("profile", Status.AVAILABLE, "statistics.time_measurement." + `${type}_status`);
                 break;
             }
             case Status.MEASURING: {
                 // Starting the measurement system. Set everything necessary.
                 // Remove duplicate measuring requests.
-                if (this.storage.get("profile").statistics.time_measurement[type + "_status"] === Status.MEASURING) return;
+                if (this.storage.get("profile")?.statistics?.time_measurement[type + "_status"] === Status.MEASURING || false) return;
 
                 this.logger.log(LoggerType.DATA, "Start Measuring metrics.")
                 this.storage.set("profile", dayjs().unix(), "statistics.time_measurement." + `${type}_last`);
@@ -186,7 +186,7 @@ export interface UserProfileModel {
     tasks: Array<any>
     week: WeekModel,
     notify_color: string,
-    statistics: StatModel
+    statistics?: StatModel
 }
 
 export interface WeekModel {
