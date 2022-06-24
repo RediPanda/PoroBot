@@ -126,7 +126,7 @@ export class UserProfile {
      * @returns Returns a boolean whether the week incrementer can continue or not.
      */
     CanIncrement(): boolean {
-        console.log(`${this.storage.get("profile").week.current} < ${this.storage.get("profile").week.end}`)
+        // console.log(`${this.storage.get("profile").week.current} < ${this.storage.get("profile").week.end}`)
         return (this.storage.get("profile").week.current || 1) < this.storage.get("profile").week.end
     }
 
@@ -134,7 +134,7 @@ export class UserProfile {
      * Increments the internal week counter.
      */
     IncrementWeek(): void {
-        let curInt = this.storage.get("profile").week.current || 1;
+        let curInt = this.storage.get("profile")?.week?.current || 1;
         this.storage.set("profile", curInt + 1, "week.current")
     }
 
@@ -143,7 +143,7 @@ export class UserProfile {
      * @returns Week Number
      */
     GetWeek(): number {
-        return this.storage.get("profile").week.current || 1;
+        return this.storage.get("profile")?.week?.current || 1;
     }
 
     /**
@@ -160,7 +160,7 @@ export class UserProfile {
      * @returns Maximum Week value
      */
     GetMaxWeek(): number {
-        return this.storage.get("profile").week.end || 1
+        return this.storage.get("profile")?.week?.end || 1
     }
 
     /**

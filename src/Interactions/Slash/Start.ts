@@ -87,6 +87,11 @@ export default class StartCMD extends InteractionEvent {
         }
 
         let UP = new UserProfile(interaction.client, interaction.user.id);
+
+        // Edge case if MEASURING was the last state for study.
+        if (UP.GetStatData().time_measurement.study_status === Status.MEASURING) {
+            
+        }
         UP.MeasureStatistics(Status.MEASURING, metric as MetricType);
 
         // Create embed.

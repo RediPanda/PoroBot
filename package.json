@@ -8,6 +8,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "prod": "cross-env NODE_ENV=production node dist/index.js",
+    "prod:trace": "cross-env NODE_ENV=production node --trace-deprecation dist/index.js",
     "prod:fix": "cross-env NODE_ENV=production ts-node src/index.ts",
     "prod:test": "cross-env NODE_ENV=production ts-node dist/index.js",
     "build": "npx tsc",

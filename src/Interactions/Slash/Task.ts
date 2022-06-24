@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandType, AutocompleteInteraction, CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandType, AutocompleteInteraction, ButtonInteraction, CommandInteraction, GuildMember, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import InteractionEvent from "./Base";
 import { Storage, StorageType } from '../../Framework/IO/Storage';
 import dayjs from "dayjs";
@@ -100,13 +100,31 @@ export default class TaskCMD extends InteractionEvent {
         Embed.addField("Task Resources:", `
         [Rubric Link](${Task.getRubricLink() || "https://google.com.au"} "URL pointing to the Task's Rubric/Primary source.")
         [Submission Link](${Task.getSubmitLink() || "https://google.com.au"} "URL pointing to the Task's Submission/Secondary source.") (Closes in <t:${dayjs(Task.getDueDate()).unix()}:R>)
+        {{MORE_RESOURCES_()}}
         `)
 
-        interaction.reply({embeds: [Embed]});
+        // Provide admin options if task is owned.
+        if (Task.getOwner() === interaction.user.id) {
+            const row = new MessageActionRow()
+			    .addComponents(
+			    	new MessageButton()
+			    		.setCustomId('Slash.Task.Primary')
+			    		.setLabel('Primary')
+			    		.setStyle('PRIMARY'),
+			    );
+
+            interaction.reply({embeds: [Embed], components: [row]});
+        } else {
+            interaction.reply({embeds: [Embed]});
+        }
     }
 
     handlePerm(): boolean {
         return true;
+    }
+
+    handleButton(interaction: ButtonInteraction): void {
+        console.log(interaction)
     }
 
     // Custom handler that hooks and listens for autocomplete interactions.
