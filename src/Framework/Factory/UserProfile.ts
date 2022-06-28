@@ -58,21 +58,28 @@ export class UserProfile {
                 this.storage.set("profile", 0, "statistics." + `cumulative_${type}`);
                 break;
             }
+
             case Status.AVAILABLE: {
                 // Calculate difference first.
                 // Now calculate and append the cumulative time value.
                 let time = this.storage.get("profile")?.statistics[`cumulative_${type}`] || 0;
-                time += (dayjs().unix() - (dayjs.unix(this.storage.get("profile")?.statistics?.time_measurement[`${type}_last`])).unix());
-                this.logger.log(LoggerType.DEBUG, `Calculated time = ${(dayjs().unix() - (dayjs.unix(this.storage.get("profile")?.statistics?.time_measurement[`${type}_last`])).unix())} seconds`)
+                let oldunix = (dayjs.unix(this.storage.get("profile")?.statistics?.time_measurement[`${type}_last`])).unix();
+                time += (dayjs().unix() - oldunix);
+                this.logger.log(LoggerType.DEBUG, `Calculated time = ${(dayjs().unix() - oldunix)} seconds`)
 
                 // We are coming back from the MEASURE state, so we can stop the update and calculate the cumulative.
                 this.storage.set("profile", dayjs().unix(), "statistics.time_measurement." + `${type}_last`);
 
                 // If statement ensures that the last status was indeed measuring and not AVAILABLE/RESET again.
-                if (((this.storage.get("profile") as UserProfileModel)?.statistics?.time_measurement[`${type}_status`] == Status.MEASURING) || false) this.storage.set("profile", time, "statistics." + `cumulative_${type}`);
+                if (((this.storage.get("profile") as UserProfileModel)?.statistics?.time_measurement[`${type}_status`] == Status.MEASURING) || false) {
+                    // Small edge-case if finished recording a sample. This is for furthering any operations relating to tracking metrics.
+                    // TODO: add metric appender here.
+                    this.storage.set("profile", time, "statistics." + `cumulative_${type}`);
+                }
                 this.storage.set("profile", Status.AVAILABLE, "statistics.time_measurement." + `${type}_status`);
                 break;
             }
+            
             case Status.MEASURING: {
                 // Starting the measurement system. Set everything necessary.
                 // Remove duplicate measuring requests.

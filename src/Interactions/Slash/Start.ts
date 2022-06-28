@@ -19,6 +19,15 @@ export interface InteractionRegister {
 }
 
 /**
+ * @function invert
+ * @description Inverts the given metric to it's opposing other.
+ */
+function invert(metric: MetricType): MetricType {
+    if (metric === MetricType.Break) return MetricType.Study;
+    else return MetricType.Break;
+}
+
+/**
  * @class Interaction Event.
  * @description This is the base Class. New Interactions should extend 
  */
@@ -77,6 +86,7 @@ export default class StartCMD extends InteractionEvent {
     override async execute(interaction: CommandInteraction): Promise<void> {
         let metric = interaction.options.getString('metric');
         let EMBED = new MessageEmbed();
+        let desc = ``;
 
         // Cancel the interaction if no parameter was provided.
         if (metric === null) {
@@ -87,16 +97,28 @@ export default class StartCMD extends InteractionEvent {
         }
 
         let UP = new UserProfile(interaction.client, interaction.user.id);
+        const time = UP.GetStatData().time_measurement;
 
-        // Edge case if MEASURING was the last state for study.
-        if (UP.GetStatData().time_measurement.study_status === Status.MEASURING) {
-            
+        // Cases when the last state of the metric is the same metric provided and already measuring.
+        if ((time.study_status === Status.MEASURING && metric === MetricType.Study) || (time.break_status === Status.MEASURING && metric === MetricType.Break)) {
+            EMBED.setDescription("You can't start the same timer again whilst it's already running!");
+            EMBED.setColor("RED")
+            interaction.reply({embeds: [EMBED], ephemeral: true})
+            return;
         }
+
+        // Edge case if MEASURING was the last state for (opposite).
+        if (time[`${invert(metric as MetricType)}_status`] === Status.MEASURING) {
+            desc += `*We've noticed that you left the ${invert(metric as MetricType)} timer on, so we have turned this timer off for you!*\n`;
+            UP.MeasureStatistics(Status.AVAILABLE, invert(metric as MetricType));
+        }
+
         UP.MeasureStatistics(Status.MEASURING, metric as MetricType);
+        desc += `You have successfully started the timer for \`${metric}\``;
 
         // Create embed.
         EMBED.setColor("GREEN")
-        EMBED.setDescription(`You have successfully started the timer for \`${metric}\``);
+        EMBED.setDescription(desc);
         interaction.reply({embeds: [EMBED]});
     }
 

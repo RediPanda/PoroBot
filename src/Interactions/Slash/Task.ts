@@ -100,7 +100,7 @@ export default class TaskCMD extends InteractionEvent {
         Embed.addField("Task Resources:", `
         [Rubric Link](${Task.getRubricLink() || "https://google.com.au"} "URL pointing to the Task's Rubric/Primary source.")
         [Submission Link](${Task.getSubmitLink() || "https://google.com.au"} "URL pointing to the Task's Submission/Secondary source.") (Closes in <t:${dayjs(Task.getDueDate()).unix()}:R>)
-        {{MORE_RESOURCES_()}}
+        {{MORE.RESOURCES.([0])}}
         `)
 
         // Provide admin options if task is owned.

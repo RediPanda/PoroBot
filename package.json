@@ -14,6 +14,7 @@
     "build": "npx tsc",
     "flush": "cross-env NODE_ENV=development STATE=FLUSH npx ts-node src/index.ts",
     "dev": "cross-env NODE_ENV=development nodemon --watch src -e ts,json --ignore src/storage --delay 8 src/index.ts",
+    "dev:no-watch": "cross-env NODE_ENV=development ts-node src/index.ts",
     "lint": "eslint --cache src",
     "docs": "npx typedoc --tsconfig tsconfig.json",
     "slash": "ts-node ./src/Framework/WS/DeploySlashCommands.ts"

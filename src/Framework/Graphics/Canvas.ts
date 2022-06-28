@@ -20,7 +20,7 @@ export interface Size {
 
 export interface ShapeOptions {
     fill?: boolean;
-    color?: string;
+    color?: string; // HEX only. (*# not needed.)
 }
 
 export interface StrokeOptions {
@@ -49,6 +49,8 @@ export class Drawable {
 
     // Shapes
     addBox(position: Position, size: Size, options?: ShapeOptions): Drawable {
+        options?.color ? this.draw.fillStyle = `#${options?.color}` : "#000000";
+
         options?.fill
             ? this.draw.fillRect(position.x, position.y, size.width, size.length)
             : this.draw.rect(position.x, position.y, size.width, size.length)
