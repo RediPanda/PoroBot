@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import RelativeTime from "dayjs/plugin/relativeTime";
 import { TaskManager } from "../../Framework/Factory/Task";
+import ms from "ms";
 
 dayjs.extend(duration);
 dayjs.extend(RelativeTime);
@@ -111,7 +112,7 @@ export default class Profile extends InteractionEvent {
             .setThumbnail((await UP.AbstractWebhook()).avatarURL() as string)
             .setDescription(`${(interaction.client as AkairoClient).utils.getToastMessage()}, **${(interaction.member as GuildMember).displayName}**!
 
-You have accumulated over \`${dayjs.duration({seconds: UP.GetStatData()?.cumulative_study as number || 0}).humanize()}\` worth of **studying** over the bot's tracking history whilst balancing it with \`${dayjs.duration({seconds: UP.GetStatData()?.cumulative_break as number || 0}).humanize()}\` worth of **break**.        
+You have accumulated over \`${dayjs.duration({seconds: UP.GetStatData()?.cumulative_study as number || 0}).humanize()}\` [(?)](https://discord.com "${ms(parseInt(UP.GetStatData().cumulative_study as unknown as string) * 1000, {long: true})}") worth of **studying** over the bot's tracking history whilst balancing it with \`${dayjs.duration({seconds: UP.GetStatData()?.cumulative_break as number || 0}).humanize()}\` [(?)](https://discord.com "${ms(parseInt(UP.GetStatData().cumulative_break as unknown as string) * 1000, {long: true})}") worth of **break**.        
 `)
 
             .addField(`Tasks due in the new few weeks ―――― [${weektaskdata.length}]`, thisweekcontent)
