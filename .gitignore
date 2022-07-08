@@ -70,3 +70,7 @@ docs/
 # macOS
 .DS_Store
 .env-dev
+
+# Packaging stuff.
+package-lock.json
+yarn.lock
