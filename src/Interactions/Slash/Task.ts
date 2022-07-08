@@ -4,7 +4,7 @@ import { Storage, StorageType } from '../../Framework/IO/Storage';
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import RelativeTime from "dayjs/plugin/relativeTime";
-import LocalizedFormat from "dayjs/plugin/LocalizedFormat"
+import LocalizedFormat from "dayjs/plugin/localizedFormat"
 import { Task, TaskManager } from "../../Framework/Factory/Task";
 
 dayjs.extend(duration);
