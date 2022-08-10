@@ -84,7 +84,7 @@ export class ApplicationHandler {
         try {
             this.client.guilds.cache.forEach(async (g) => {
                 try {
-                    this.logger.log(LoggerType.DEBUG, `  ╰  Registered to (${g.id})`)
+                    this.logger.log(LoggerType.DEBUG, `  ╰  Registered to (${g.id}) ${g.name}`)
                     await this.client.application?.commands.create(meta, g.id);
                 } catch(err) {
                     this.logger.log(LoggerType.ERROR, "There was an issue trying to register interaction - " + meta.name + " [" + meta.type + "].");

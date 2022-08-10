@@ -21,6 +21,7 @@ import { EventEmitter } from 'stream';
 import { createPool, Pool } from 'mysql2/promise';
 import discordmodals from 'discord-modals'
 import {Utility} from './Framework/Factory/Utility'
+import { SettingsManager } from './Framework/Factory/SettingsManager';
 
 // TS Declarations
 declare module 'discord-akairo' {
@@ -34,8 +35,8 @@ declare module 'discord-akairo' {
     slashCommands: Record<string, unknown>[]
     botDir: string
     pool: Pool
-    utils: Utility;
-    // utils: Record<string, unknown>;
+    utils: Utility
+    settings: SettingsManager
   }
 }
 
@@ -118,14 +119,14 @@ export class Core extends AkairoClient {
 
     // -- Inhibitors
     this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
-    this.inhibitorHandler.loadAll();
-    frameworkLogger.log(LoggerType.INFO, "Loading the inhibitor handler!")
+    // this.inhibitorHandler.loadAll();
+    // frameworkLogger.log(LoggerType.INFO, "Loading the inhibitor handler!")
 
     // -- Listeners
     this.listenerHandler.setEmitters({
       commandHandler: this.commandHandler,
       events: this.events,
-      inhibitorHandler: this.inhibitorHandler,
+      // inhibitorHandler: this.inhibitorHandler,
       listenerHandler: this.listenerHandler,
     });
 
@@ -150,15 +151,19 @@ const client = new Core();
 frameworkLogger.log(LoggerType.INFO, "Attempting to connect to the Discord API...")
 client
   .login(process.env.AUTHORISATION)
-  .then(() => {
+  .then(async () => {
     frameworkLogger.log(LoggerType.INFO, `Session successfully connected! Running under as: [PID: ${process.pid}] ${client?.user?.tag}`)
 
     // Read and bind interactions.
+    await client.guilds.fetch();
     new ApplicationHandler(client).readInteractions();
     discordmodals(client); // Binds the modal handler.
 
     // Bind the utility system to the client.
     client.utils = new Utility(client);
+
+    // Bind the settings handler to the client.
+    client.settings = new SettingsManager(client);
   })
   .catch((err) => {
     frameworkLogger.log(LoggerType.ERROR, "There was an issue establishing a connection to the Discord API Gateway!")
