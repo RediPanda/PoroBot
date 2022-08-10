@@ -1,4 +1,4 @@
-import type { Client, TextChannel, Webhook } from 'discord.js';
+import type { Client, MessageSelectOptionData, TextChannel, Webhook } from 'discord.js';
 import { Logger, LoggerType } from '../IO/Logger';
 import { Storage, StorageType, StorageParam } from '../IO/Storage';
 import type Enmap from 'enmap';
@@ -199,3 +199,31 @@ export enum ActiveState {
     SUBMITTED = "SUBMITTED",
     OVERDUE = "OVERDUE"
 }
+
+export const ActiveStateOptionData: MessageSelectOptionData[] = [
+    {
+        label: "Pending",
+        description: "Sets your task to the default untouched state.",
+        value: "PENDING"
+    },
+    {
+        label: "Ongoing",
+        description: "Your task is currently being worked on!",
+        value: "ONGOING"
+    },
+    {
+        label: "Review",
+        description: "Task needs to be looked over before submitting!",
+        value: "REVIEW"
+    },
+    {
+        label: "Submit",
+        description: "Mark your task as submitted.",
+        value: "SUBMITTED"
+    },
+    {
+        label: "Overdue",
+        description: "This task has past it's due date.",
+        value: "OVERDUE"
+    }
+]
