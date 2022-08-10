@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from'dayjs/plugin/timezone';
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 import type { Client, TextChannel, Webhook } from 'discord.js';
 import { Logger, LoggerType } from '../IO/Logger';
 
@@ -8,10 +13,13 @@ import { Logger, LoggerType } from '../IO/Logger';
 export class Utility {
     client: Client;
     logger: Logger;
+    timezone: string;
 
     constructor(client: Client) {
         this.client = client;
         this.logger = new Logger("Utility", true)
+
+        this.timezone = "Australia/Sydney";
     }
 
     /**
@@ -19,11 +27,13 @@ export class Utility {
      * @returns 3 possible states.
      */
     getToastMessage(): string {
-        if (dayjs().hour() > 17) {
+        let timenow = dayjs().tz(this.timezone);
+        
+        if (timenow.hour() > 17) {
             return "Good evening";
         }
 
-        if (dayjs().hour() > 11) {
+        if (timenow.hour() > 11) {
             return "Good afternoon";
         } else {
             return "Good morning";
