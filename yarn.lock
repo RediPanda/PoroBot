@@ -2152,6 +2152,11 @@ normalize-url@^4.1.0:
   resolved "https://registry.npmjs.org/normalize-url/-/normalize-url-4.5.1.tgz"
   integrity sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA==
 
+not-a-log@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/not-a-log/-/not-a-log-1.0.1.tgz#530a87b678d2f67b7042dc9f8990ed99c175d7b5"
+  integrity sha512-N8ru5ZU0h4MPpMy1a8trKTcpIyHWMXHR27XmSpQ8qdBCqmrs8SMECUtwj9jTjPBlmAKirQ8h9rBobGaWagqgIQ==
+
 npmlog@^4.0.1, npmlog@^4.1.2:
   version "4.1.2"
   resolved "https://registry.npmjs.org/npmlog/-/npmlog-4.1.2.tgz"

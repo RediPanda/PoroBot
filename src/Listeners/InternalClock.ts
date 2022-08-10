@@ -35,8 +35,6 @@ export default class InternalClock extends Listener {
             const time = dayjs();
             if (time.hour() === 20 && time.minute() === 0) {  // 1-7-0 //  && time.minute() === 27
                 let registered = new Storage().select(StorageType.User).stream().keyArray();
-                //console.log(registered)
-                //console.log(registered.length)
 
                 for (let i = 0; i < registered.length; i++) {
                     let id = (registered[i] as string).split('.')[0];
