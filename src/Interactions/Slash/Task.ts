@@ -1,11 +1,12 @@
-import { ApplicationCommandOptionData, ApplicationCommandType, AutocompleteInteraction, ButtonInteraction, CommandInteraction, GuildMember, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandType, AutocompleteInteraction, ButtonInteraction, CommandInteraction, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, SelectMenuInteraction } from "discord.js";
 import InteractionEvent from "./Base";
 import { Storage, StorageType } from '../../Framework/IO/Storage';
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import RelativeTime from "dayjs/plugin/relativeTime";
 import LocalizedFormat from "dayjs/plugin/localizedFormat"
-import { Task, TaskManager } from "../../Framework/Factory/Task";
+import { Task, TaskManager, ActiveStateOptionData, ActiveState } from "../../Framework/Factory/Task";
+import { Modal, TextInputComponent, showModal, ModalSubmitInteraction } from 'discord-modals'
 
 dayjs.extend(duration);
 dayjs.extend(RelativeTime);
@@ -73,10 +74,10 @@ export default class TaskCMD extends InteractionEvent {
     override async execute(interaction: CommandInteraction): Promise<void> {
         const TM = new TaskManager(interaction.client);
         const TaskName = interaction.options.getString("taskid", true);
-        const Embed = new MessageEmbed();
+        let Embed: MessageEmbed = new MessageEmbed();
 
         // Fetch and retrive new Task obj via Task Manager.
-        let Task = null as any;
+        let Task: Task = null as any;
         if (TM.ExistByName(TaskName)) Task = TM.GetByName(TaskName);
         if (TM.ExistById(TaskName)) Task = TM.GetById(TaskName);
 
@@ -85,46 +86,222 @@ export default class TaskCMD extends InteractionEvent {
             Embed.setColor("RED");
             Embed.setDescription("The task you tried to view/manage was unavailable at this time!");
             interaction.reply({embeds: [Embed]});
+            return;
         }
 
         // Display the task.
-        Embed.setTitle(`Task: ${Task.getName()}`)
-        Embed.setColor("BLURPLE");
-        Embed.addField("Task Information:", `
- ╰― **Task Owner:** <@${Task.getOwner()}>
- ╰― **Status:** \`${Task.getActiveState()}\`
- ╰― **Class Name and Type:** \`${Task.getClassId().trim()}\` as \`${Task.getType().trim()}\`
- ╰― **Due Time:** ${dayjs(Task.getDueDate()).format('dddd, MMMM D h:mm A')}
-        `)
-
-        Embed.addField("Task Resources:", `
-        [Rubric Link](${Task.getRubricLink() || "https://google.com.au"} "URL pointing to the Task's Rubric/Primary source.")
-        [Submission Link](${Task.getSubmitLink() || "https://google.com.au"} "URL pointing to the Task's Submission/Secondary source.") (Closes in <t:${dayjs(Task.getDueDate()).unix()}:R>)
-        {{MORE.RESOURCES.([0])}}
-        `)
+        Embed = Task.toEmbed();
 
         // Provide admin options if task is owned.
         if (Task.getOwner() === interaction.user.id) {
-            const row = new MessageActionRow()
+            const rowA = new MessageActionRow()
+                .addComponents(
+                    new MessageSelectMenu()
+                        .setCustomId(`Slash.Task.${interaction.user.id}.EditState.${Task.getId()}`)
+                        .setPlaceholder('(Optional) Change the state of the task.')
+                        .addOptions(ActiveStateOptionData)
+                )
+            const rowB = new MessageActionRow()
 			    .addComponents(
 			    	new MessageButton()
-			    		.setCustomId('Slash.Task.Primary')
-			    		.setLabel('Primary')
-			    		.setStyle('PRIMARY'),
+			    		.setCustomId(`Slash.Task.${interaction.user.id}.EditA.${Task.getId()}`)
+			    		.setEmoji('✏️')
+                        .setLabel('Info')
+			    		.setStyle('SECONDARY'),
+			    )
+                .addComponents(
+			    	new MessageButton()
+			    		.setCustomId(`Slash.Task.${interaction.user.id}.EditB.${Task.getId()}`)
+			    		.setEmoji('✏️')
+                        .setLabel('Resources')
+			    		.setStyle('SECONDARY'),
+			    )
+                .addComponents(
+			    	new MessageButton()
+			    		.setCustomId(`Slash.Task.${interaction.user.id}.Submit.${Task.getId()}`)
+			    		.setLabel('Submit')
+                        .setEmoji('🔖')
+			    		.setStyle('SUCCESS'),
 			    );
 
-            interaction.reply({embeds: [Embed], components: [row]});
+            interaction.reply({embeds: [Embed], components: [rowA, rowB]});
         } else {
             interaction.reply({embeds: [Embed]});
         }
     }
 
-    handlePerm(): boolean {
-        return true;
+    handlePerm(interaction: ButtonInteraction | SelectMenuInteraction): boolean {
+        if ((interaction as ButtonInteraction).customId.split('.')[2] === interaction.member?.user.id) return true;
+        return false;
     }
 
     handleButton(interaction: ButtonInteraction): void {
-        console.log(interaction)
+        const args = interaction.customId.split(".");
+        const TM = new TaskManager(interaction.client);
+        const Task = TM.GetById(args[4]);
+
+        switch(args[3]) {
+            case "EditA": {
+                // Create modal.
+                const modal = new Modal() // We create a Modal
+                .setCustomId(`Slash.Task.${interaction.user.id}.EditA.${Task.getId()}`)
+                .setTitle(`Editing: ${Task.getName()}`)
+                .addComponents(
+                  new TextInputComponent() // We create a Text Input Component
+                  .setCustomId('ClassName')
+                  .setLabel('Class Name')
+                  .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                  .setMinLength(1)
+                  .setMaxLength(12)
+                  .setPlaceholder('(Leave empty for no edit.)')
+                  .setRequired(false) // If it's required or not
+                )
+                .addComponents(
+                    new TextInputComponent() // We create a Text Input Component
+                    .setCustomId('Type')
+                    .setLabel('Type')
+                    .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                    .setMinLength(1)
+                    .setMaxLength(12)
+                    .setPlaceholder('(Leave empty for no edit.)')
+                    .setRequired(false) // If it's required or not 
+                )
+                .addComponents(
+                    new TextInputComponent() // We create a Text Input Component
+                    .setCustomId('DueDate')
+                    .setLabel('Due Date')
+                    .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                    .setMinLength(5)
+                    .setMaxLength(5)
+                    .setPlaceholder('(Leave empty for no edit.) 01/01 (DD/MM)')
+                    .setRequired(false) // If it's required or not 
+                )
+                .addComponents(
+                    new TextInputComponent() // We create a Text Input Component
+                    .setCustomId('DueTime')
+                    .setLabel('Due Time')
+                    .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                    .setMinLength(5)
+                    .setMaxLength(5)
+                    .setPlaceholder('(Leave empty for no edit.) 21:00 (HH:MM) (24-hour format)')
+                    .setRequired(false) // If it's required or not 
+                )
+
+                showModal(modal, {
+                    client: interaction.client,
+                    interaction: interaction
+                })
+                break;
+            }
+
+            case "EditB": {
+                const modalTemplate = new Modal() // We create a Modal
+                .setCustomId(`Slash.Task.${interaction.user.id}.EditB.${Task.getId()}`)
+                .setTitle(`Editing: ${Task.getName()}`)
+                .addComponents(
+                    new TextInputComponent() // We create a Text Input Component
+                    .setCustomId('RubricLink')
+                    .setLabel('Rubric Link')
+                    .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                    .setMinLength(5)
+                    .setMaxLength(220)
+                    .setPlaceholder('(Leave empty for no edit.)')
+                    .setRequired(false) // If it's required or not
+                )
+                .addComponents(
+                    new TextInputComponent() // We create a Text Input Component
+                    .setCustomId('SubmitLink')
+                    .setLabel('Submission Link')
+                    .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                    .setMinLength(5)
+                    .setMaxLength(220)
+                    .setPlaceholder('(Leave empty for no edit.)')
+                    .setRequired(false) // If it's required or not 
+                )
+
+                showModal(modalTemplate, {
+                    client: interaction.client,
+                    interaction: interaction
+                })
+                break;
+            }
+
+            case "Submit": {
+                // Mark the task in the system as done.
+                Task.setActiveState(ActiveState.SUBMITTED);
+
+                // Update embed.
+                let embed = Task.toEmbed();
+
+                // Edit the original message.
+                (interaction.message as Message).edit({embeds: [embed]});
+                interaction.reply({content: "Task has been updated!", ephemeral: true});
+                break;
+            }
+        }
+    }
+
+    // THIS FUNCTION ONLY RUNS FOR EDIT-MODE OPERATIONS ONLY.
+    handleModal(modal: ModalSubmitInteraction): void {
+        const args = modal.customId.split(".");
+        const TM = new TaskManager(modal.client);
+        const Task = TM.GetById(args[4]);
+
+        switch(args[3]) {
+            case "EditA": {
+                let [ClassName, Type, DueDate, DueTime] = [
+                    modal.getTextInputValue("ClassName"),
+                    modal.getTextInputValue("Type"),
+                    modal.getTextInputValue("DueDate"),
+                    modal.getTextInputValue("DueTime")
+                ]
+
+                if (ClassName !== null) Task.setName(ClassName);
+                if (Type !== null) Task.setType(Type);
+
+                if (DueDate !== null) {
+                    let modDate = Task.getDueDate();
+
+                    modDate.setMonth(parseInt(DueDate.split("/")[1]) - 1, parseInt(DueDate.split("/")[0]))
+                    Task.setDueDate(modDate);
+                }
+                    
+                if (DueTime !== null) {
+                    let modTime = Task.getDueDate();
+
+                    modTime.setHours(parseInt(DueTime.split(":")[0]), parseInt(DueTime.split(":")[1]))
+                    Task.setDueDate(modTime);
+                 }
+                break;
+            }
+            case "EditB": {
+                let [RubricLink, SubmitLink] = [
+                    modal.getTextInputValue("RubricLink"),
+                    modal.getTextInputValue("SubmitLink")
+                ]
+
+                if (RubricLink !== null) Task.setRubricLink(RubricLink);
+                if (SubmitLink !== null) Task.setSubmitLink(SubmitLink);
+                break;
+            }
+        }
+        modal.reply({content: "You have successfully edited the task!", ephemeral: true})
+    }
+
+    handleInteraction(interaction: SelectMenuInteraction): void {
+        const args = interaction.customId.split(".");
+        const TM = new TaskManager(interaction.client);
+        const Task = TM.GetById(args[4]);
+
+        let selection = interaction.values[0];
+        Task.setActiveState(ActiveState[selection as ActiveState]);
+
+        // Update embed.
+        let embed = Task.toEmbed();
+
+        // Edit the original message.
+        (interaction.message as Message).edit({embeds: [embed]});
+        interaction.reply({content: "Task has been updated!", ephemeral: true});
     }
 
     // Custom handler that hooks and listens for autocomplete interactions.
@@ -139,7 +316,7 @@ export default class TaskCMD extends InteractionEvent {
         // Append all tasks by name.
         tasks = tasks.concat(storage.array().map(t => t.name));
 
-        const filtered = tasks.filter(t => t.startsWith(focusedValue));
+        const filtered = tasks.filter(t => t.startsWith(focusedValue)).splice(0, 25);
         interaction.respond(
             filtered.map(opt => ({ name: opt, value: opt}))
         )
