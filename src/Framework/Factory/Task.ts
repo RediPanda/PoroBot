@@ -1,9 +1,10 @@
-import type { Client, MessageSelectOptionData, TextChannel, Webhook } from 'discord.js';
+import { Client, MessageEmbed, MessageSelectOptionData, TextChannel, Webhook } from 'discord.js';
 import { Logger, LoggerType } from '../IO/Logger';
 import { Storage, StorageType, StorageParam } from '../IO/Storage';
 import type Enmap from 'enmap';
 import dayjs from 'dayjs';
 import IsBetween from 'dayjs/plugin/isBetween';
+import { Utility } from './Utility';
 
 dayjs.extend(IsBetween);
 
@@ -115,16 +116,31 @@ export class Task {
         return this.data.name;
     }
 
+    setName(input: string): void { 
+        this.storage.set(this.data.id as string, input, "name");
+        this.data.name = input;
+    }
+
     getOwner(): string {
         return this.data?.target || "Unassigned";
     }
 
     getDueDate(): Date {
-        return this.data?.dueDate || new Date("2025-12-25");
+        return this.data?.dueDate || new Date("2002-09-05");
+    }
+
+    setDueDate(date: Date): void {
+        this.storage.set(this.data.id as string, date, "dueDate");
+        this.data.dueDate = date;
     }
 
     getType(): string {
         return this.data.type;
+    }
+
+    setType(type: string): void {
+        this.storage.set(this.data.id as string, type, "type");
+        this.data.type = type;
     }
 
     getClassId(): string {
@@ -137,6 +153,7 @@ export class Task {
 
     setSubmitLink(url: string): void {
         this.storage.set(this.data.id as string, url, "submitLink");
+        this.data.submitLink = url;
     }
 
     getRubricLink(): string {
@@ -145,18 +162,16 @@ export class Task {
 
     setRubricLink(url: string): void {
         this.storage.set(this.data.id as string, url, "rubricLink");
+        this.data.rubricLink = url;
     }
 
     getActiveState(): ActiveState {
         return this.data.activeState;
     }
 
-    setDueDate(date: Date): void {
-        this.storage.set(this.data.id as string, date, "dueDate");
-    }
-
     setActiveState(newState: ActiveState): void {
         this.storage.set(this.data.id as string, newState, "activeState");
+        this.data.activeState = newState;
     }
 
     isDueThisWeek(): boolean {
@@ -178,6 +193,27 @@ export class Task {
 
         return this.isDueThisWeek() || dayjs(this.getDueDate()).isBetween(startWeek, endWeek);
     }
+
+    toEmbed(): MessageEmbed {
+        let builder = new MessageEmbed();
+        let util = new Utility();
+
+        builder.setTitle(`Task: ${this.getName()}`)
+        builder.setColor(ActiveStateColor[this.getActiveState()]);
+        builder.addField("Task Information:", `
+ ╰― **Task Owner:** <@${this.getOwner()}>
+ ╰― **Status:** \`${this.getActiveState()}\`
+ ╰― **Class Name and Type:** \`${this.getClassId().trim()}\` as \`${this.getType().trim()}\`
+ ╰― **Due Time:** ${dayjs(this.getDueDate()).format('dddd, MMMM D h:mm A')}
+        `)
+
+        builder.addField("Task Resources:", `
+        [Rubric Link](${this.getRubricLink() || "https://google.com.au"} "URL pointing to the Task's Rubric/Primary source.")
+        [Submission Link](${this.getSubmitLink() || "https://google.com.au"} "URL pointing to the Task's Submission/Secondary source.") (${util.dueRelativeText(dayjs(this.getDueDate()).unix())} <t:${dayjs(this.getDueDate()).unix()}:R>)
+        `)
+
+        return builder;
+    }
 }
 
 export interface TaskModel {
@@ -198,6 +234,14 @@ export enum ActiveState {
     REVIEW = "REVIEW",
     SUBMITTED = "SUBMITTED",
     OVERDUE = "OVERDUE"
+}
+
+export enum ActiveStateColor {
+    PENDING = "ORANGE",
+    ONGOING = "YELLOW",
+    REVIEW = "BLURPLE",
+    SUBMITTED = "GREEN",
+    OVERDUE = "RED"
 }
 
 export const ActiveStateOptionData: MessageSelectOptionData[] = [
