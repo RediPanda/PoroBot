@@ -20,7 +20,7 @@ import type { Emoji, EmojiResolvable, User, UserResolvable } from 'discord.js';
 import { EventEmitter } from 'stream';
 import { createPool, Pool } from 'mysql2/promise';
 import discordmodals from 'discord-modals'
-import {Utility} from './Framework/Factory/Utility'
+import { Utility } from './Framework/Factory/Utility'
 import { SettingsManager } from './Framework/Factory/SettingsManager';
 
 // TS Declarations
@@ -160,7 +160,7 @@ client
     discordmodals(client); // Binds the modal handler.
 
     // Bind the utility system to the client.
-    client.utils = new Utility(client);
+    client.utils = new Utility();
 
     // Bind the settings handler to the client.
     client.settings = new SettingsManager(client);
