@@ -6,17 +6,16 @@ dayjs.extend(timezone)
 
 import type { Client, TextChannel, Webhook } from 'discord.js';
 import { Logger, LoggerType } from '../IO/Logger';
+import type { ActiveState } from './Task';
 
 /**
  * @description This file is responsible for holding miscellaneous functions that cannot be orientated as factories or fit into the FS subsets.
  */
 export class Utility {
-    client: Client;
     logger: Logger;
     timezone: string;
 
-    constructor(client: Client) {
-        this.client = client;
+    constructor() {
         this.logger = new Logger("Utility", true)
 
         this.timezone = "Australia/Sydney";
@@ -37,6 +36,22 @@ export class Utility {
             return "Good afternoon";
         } else {
             return "Good morning";
+        }
+    }
+
+    /**
+     * Relative Text Builder.
+     * @param comparator This is in unix time to compare.
+     */
+    dueRelativeText(comparator: Number): string {
+        let timenow = dayjs().tz(this.timezone);
+
+        let unix = timenow.unix();
+
+        if (comparator > unix) {
+            return "Due";
+        } else {
+            return "Overdue since";
         }
     }
 }
