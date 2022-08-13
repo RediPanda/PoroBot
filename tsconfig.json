@@ -32,7 +32,7 @@
     "typedocOptions": {
       "entryPoints": ["src/docs.ts"],
       "out": "docs",
-      "name": "YulxVol Manager Documentation",
+      "name": "PoroBot Documentation",
       "json": "docs/docs.json",
       "excludePrivate": true,
       "excludeInternal": true,
