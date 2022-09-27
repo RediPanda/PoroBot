@@ -68,7 +68,9 @@ export default class InternalClock extends Listener {
             "Even Jesus is disappointed",
             "Cmon...If Anya can do it, you can do it too",
             "DO THE ASSIGNMENT, NO MAIDEN WANTS A DUMB DUMB",
-            "Do the assignment or suck my toes, the choice is yours"
+            "Do the assignment or suck my toes, the choice is yours",
+            "you better do ur assignment ya dirty slut",
+            "that assignment still sitting there, you dirty kinky bastard"
           ]
 
           let stream = new Storage().select(StorageType.Task).stream();
