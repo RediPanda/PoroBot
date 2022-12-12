@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandType, CommandInteraction, GuildMember, MessageEmbed, Webhook } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandType, CommandInteraction, Guild, GuildMember, MessageEmbed } from "discord.js";
 import InteractionEvent from "./Base";
 
 export interface InteractionRegister {
@@ -63,7 +63,7 @@ export default class BringFatherCMD extends InteractionEvent {
         // Commit and attempt to run the voice bring operation.
         try {
             // Bring father.
-            let father = await interaction.guild.members.fetch(father_id);
+            let father = await (interaction.guild as Guild)?.members?.fetch(father_id);
 
             if (!father.voice.channel) {
                 // Father is not in a voice channel.
@@ -75,7 +75,7 @@ export default class BringFatherCMD extends InteractionEvent {
             }
 
             // Please attempt to move father now.
-            await father.voice.setChannel(interaction.member.voice.channelId, `${interaction.member.user.tag} has moved father!`)
+            await (father as GuildMember)?.voice?.setChannel((interaction.member as GuildMember)?.voice?.channelId, `${(interaction.member as GuildMember).user.tag} has moved father!`)
 
             // Customise the message.
             embed.setDescription(`You have brought <@${father_id}> to <#${(interaction.member as GuildMember).voice.channelId}>`)
