@@ -1,3 +1,5 @@
+> ⚠️ This project has been archived as this project is discontinued to favour a much better bot framework.
+
 # Welcome to the PoroBot!
 
 Note: This is a framework fork off the Nekonii Abstract v2 repo.
